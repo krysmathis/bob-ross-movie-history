@@ -20,12 +20,9 @@ namespace MovieHistory.Controllers
 
         public IActionResult Index()
         {
-<<<<<<< HEAD
-            ViewData["Greeting"] = "Hello";
-=======
+
             ViewData["apiKey"] = Configuration["MovieAPIKey"];
 
->>>>>>> upstream/master
             return View();
         }
 
