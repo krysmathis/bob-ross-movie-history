@@ -5,14 +5,27 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MovieHistory.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace MovieHistory.Controllers
 {
     public class HomeController : Controller
     {
+        public IConfiguration Configuration { get; set; }
+
+        public HomeController(IConfiguration config)
+        {
+            Configuration = config;
+        }
+
         public IActionResult Index()
         {
+<<<<<<< HEAD
             ViewData["Greeting"] = "Hello";
+=======
+            ViewData["apiKey"] = Configuration["MovieAPIKey"];
+
+>>>>>>> upstream/master
             return View();
         }
 
