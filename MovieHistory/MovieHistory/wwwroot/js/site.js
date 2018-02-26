@@ -6,3 +6,5 @@
         success: (Response => console.log(Response))
     })
 });
+
+System.Environment.GetEnvironmentVariable("BANGAZON_CLI_APP_DB");

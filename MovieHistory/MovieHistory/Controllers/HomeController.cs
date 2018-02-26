@@ -12,6 +12,7 @@ namespace MovieHistory.Controllers
     {
         public IActionResult Index()
         {
+            ViewData["Greeting"] = "Hello";
             return View();
         }
 
