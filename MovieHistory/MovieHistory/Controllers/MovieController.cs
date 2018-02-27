@@ -1,4 +1,4 @@
-﻿using System;
+﻿    using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -8,22 +8,32 @@ using MovieHistory.Models;
 using Microsoft.Extensions.Configuration;
 using MovieHistory.Services;
 using Microsoft.Extensions.Options;
+using MovieHistory.Data;
 
 namespace MovieHistory.Controllers
 {
-    public class HomeController : Controller
+    public class MovieController : Controller
     {
         private readonly IApplicationConfiguration _appSettings;
+        private ApplicationDbContext _context;
 
-        public HomeController(IApplicationConfiguration appSettings)
+        public MovieController(IApplicationConfiguration appSettings, ApplicationDbContext ctx)
         {
             _appSettings = appSettings;
+            _context = ctx;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Track(string apiId, string title, string img)
         {
+            var movie = new Movie
+            {
+                ApiId = Int32.Parse(apiId),
+                Title = title,
+                ImgUrl = img
+            };
 
-            ViewData["apiKey"] = _appSettings.MovieAPIKey;
+            _context.Add(movie);
+            await _context.SaveChangesAsync();
 
             return View();
         }
