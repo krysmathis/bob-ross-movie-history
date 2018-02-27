@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using MovieHistory.Services;
 using Microsoft.Extensions.Options;
 using MovieHistory.Data;
+using Microsoft.AspNetCore.Identity;
 
 namespace MovieHistory.Controllers
 {
@@ -16,12 +17,16 @@ namespace MovieHistory.Controllers
     {
         private readonly IApplicationConfiguration _appSettings;
         private ApplicationDbContext _context;
+        private UserManager<ApplicationUser> _userManager;
 
-        public MovieController(IApplicationConfiguration appSettings, ApplicationDbContext ctx)
+        public MovieController(IApplicationConfiguration appSettings, ApplicationDbContext ctx, UserManager<ApplicationUser> userManager)
         {
             _appSettings = appSettings;
             _context = ctx;
+            _userManager = userManager;
         }
+
+        private Task<ApplicationUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
 
         public async Task<IActionResult> Track(string apiId, string title, string img)
         {
@@ -32,8 +37,19 @@ namespace MovieHistory.Controllers
                 ImgUrl = img
             };
 
+            var user = await GetCurrentUserAsync();
+
+            var movieUser = new MovieUser
+            {
+                User = user,
+                Movie = movie
+            };
+
+            _context.Add(movieUser);
             _context.Add(movie);
+
             await _context.SaveChangesAsync();
+
 
             return View();
         }

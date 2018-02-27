@@ -32,4 +32,3 @@ $("#movieSearch__button").click(evt => {
     })
 });
 
-System.Environment.GetEnvironmentVariable("BANGAZON_CLI_APP_DB");
