@@ -2,7 +2,7 @@
 
 <h1>Yay! You tracked a movie!</h1>
 
-<div id="movieGrid" class="container-fluid">
+<div id="trackedMovieGrid" class="container-fluid">
 
     @foreach (var trackedMovie in Model.TrackedUserMovies)
     {
@@ -13,10 +13,29 @@
                 <h2 class="fakeLink">@Html.DisplayFor(modelItem => trackedMovie.Title)</h2>
                 <img class="fakeLink" 
                      src="https://image.tmdb.org/t/p/w154/@Html.DisplayFor(modelItem => trackedMovie.ImageURL)" />
+                <form asp-action="Update" asp-route-id="@trackedMovie.MovieUserId" method="post">
+                    <div>Favorited: @Html.CheckBoxFor(modelItem => trackedMovie.Favorited)</div>
+                    <div><input asp-for="@trackedMovie.Genre" /></div>
+                    <div>Watched: @Html.CheckBoxFor(modelItem => trackedMovie.Watched)</div>
+                </form>
+                <button class="recommend__btn btn btn-default" id="recommendMovie--@Html.DisplayFor(modelItem => trackedMovie.MovieUserId)">Recommend</button>
             </div>
         </div>
     }
 
+    <div class="recommend_user_modal modal fade" style="display:none;">
+       <div class="modal-dialog">
+            <select id="user__select">
+            @foreach (var user in Model.Users)
+            { 
+                <option value="@user.Id">@Html.DisplayFor(modelItem => user.UserName)</option>
+            }
+            </select>
+            <button class="user-button" id="">Recommend</button>
+
+
+       </div>
+    </div>
 </div>
 
 

@@ -8,5 +8,7 @@ namespace MovieHistory.Models.MovieViewModels
     public class TrackedMoviesViewModel
     {
         public ICollection<TrackedMovie> TrackedUserMovies { get; set; }
+        public ICollection<ApplicationUser> Users { get; set; }
+
     }
 }

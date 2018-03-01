@@ -6,6 +6,30 @@
     window.location = `/Movie/Track/?apiId=${movie.id}&title=${movie.title}&img=${movie.poster_path}`
 })
 
+// recommend a movie
+$("#trackedMovieGrid").on("click", evt => {
+    if (evt.target.className.includes("recommend__btn")) {
+        const movieUserId = evt.target.id.split("--")[1]
+
+        // open the modal
+        $(".recommend_user_modal").modal("show");
+        $(".user-button").attr("id", movieUserId)
+    
+
+    }
+});
+
+$(".user-button").on("click", evt => {
+
+    userId = $("#user__select").val()
+    movieUserId = evt.target.id
+    $.ajax({
+        method: "POST",
+        url: `/Movie/Recommend/?movieUserId=${movieUserId}&userId=${userId}`
+    })
+
+    $(".recommend_user_modal").modal("hide");
+ })
 
 $("#movieSearch__button").click(evt => {
     const userSearchString = $("#movieSearch").val()

@@ -1,4 +1,4 @@
-﻿    using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -12,6 +12,7 @@ using MovieHistory.Data;
 using Microsoft.AspNetCore.Identity;
 using MovieHistory.Models.MovieViewModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace MovieHistory.Controllers
 {
@@ -34,13 +35,14 @@ namespace MovieHistory.Controllers
 
         private Task<ApplicationUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
 
-        public async Task<IActionResult> ListTracked ()
+        public async Task<IActionResult> ListTracked()
         {
             ApplicationUser user = await GetCurrentUserAsync();
 
             var model = new TrackedMoviesViewModel();
             model.TrackedUserMovies = GetUserTrackedMovies(user);
-
+            model.Users = GetUsers(user);
+            
             return View(model);
         }
 
@@ -62,22 +64,8 @@ namespace MovieHistory.Controllers
                 ImgUrl = img
             };
 
-            var user = await GetCurrentUserAsync();
-
-            var movieUser = new MovieUser
-            {
-                User = user,
-                Movie = movie
-            };
-
-            _context.Add(movieUser);
             _context.Add(movie);
 
-<<<<<<< HEAD
-
-            ApplicationUser _user = await GetCurrentUserAsync();
-=======
->>>>>>> upstream/master
 
             //track that movie for the current user
             var trackMovie = new MovieUser
@@ -90,29 +78,27 @@ namespace MovieHistory.Controllers
             _context.Add(trackMovie);
             await _context.SaveChangesAsync();
 
-<<<<<<< HEAD
-
-            return View();
-=======
             return RedirectToActionPermanent("ListTracked");
         }
 
-        public ICollection<TrackedMovie> GetUserTrackedMovies (ApplicationUser user)
+        public ICollection<TrackedMovie> GetUserTrackedMovies(ApplicationUser user)
         {
             return (from m in _context.Movie
-             join mu in _context.MovieUser
-               on m.MovieId equals mu.MovieId
-             where mu.User == user
-             select new TrackedMovie
-             {
-                 MovieUserId = mu.MovieUserId,
-                 Title = m.Title,
-                 ImageURL = m.ImgUrl,
-                 Genre = mu.Genre,
-                 Favorited = mu.Favorited,
-                 Watched = mu.Watched
-             }).ToList();
+                    join mu in _context.MovieUser
+                      on m.MovieId equals mu.MovieId
+                    where mu.User == user
+                    select new TrackedMovie
+                    {
+                        MovieUserId = mu.MovieUserId,
+                        Title = m.Title,
+                        ImageURL = m.ImgUrl,
+                        Genre = mu.Genre,
+                        Favorited = mu.Favorited,
+                        Watched = mu.Watched
+                    }).ToList();
         }
+
+        public ICollection<ApplicationUser> GetUsers(ApplicationUser user) => _context.Users.Where(u => u != user).ToList();
 
         public bool IsMovieTracked (int movieId, ApplicationUser user)
         {
@@ -127,7 +113,32 @@ namespace MovieHistory.Controllers
             }
 
             return true;
->>>>>>> upstream/master
+
+        }
+
+        public async Task<IActionResult> Recommend(string movieUserId, string userId)
+        {
+            ApplicationUser user = await GetCurrentUserAsync();
+
+            var model = new TrackedMoviesViewModel();
+            model.TrackedUserMovies = GetUserTrackedMovies(user);
+
+            // get the user from the database
+            var toUser = _context.Users.Where(u => u.Id == userId).SingleOrDefault();
+            
+            //create a record
+            var recomemendation = new Recommendation()
+            {
+                ToUser = toUser,
+                MovieUserId = Convert.ToInt32(movieUserId)
+            };
+
+
+            _context.Add(recomemendation);
+            await _context.SaveChangesAsync();
+
+            return RedirectToActionPermanent("ListTracked");
+
         }
 
         public IActionResult About()
